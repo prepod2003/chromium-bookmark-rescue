@@ -127,7 +127,7 @@ Any Chromium-based browser: Comet (Perplexity), Arc, Brave, Vivaldi, Opera, Oper
 
 ## Author
 
-**Sergey V. Radzivillovich** — [prepod2003@yandex.ru](mailto:prepod2003@yandex.ru)
+**Sergey Radzivillovich** — [prepod2003@yandex.ru](mailto:prepod2003@yandex.ru)
 
 ## License
 
