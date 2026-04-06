@@ -3,3 +3,5 @@ comet_data.js
 *.bak
 __pycache__/
 *.pyc
+host/*.bat
+host/*.json

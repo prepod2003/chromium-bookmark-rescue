@@ -1,174 +1,188 @@
-const statusEl = document.getElementById("status");
-const statsEl = document.getElementById("stats");
-const warningBox = document.getElementById("warningBox");
-const replaceBtn = document.getElementById("replaceBtn");
-const confirmBar = document.getElementById("confirmBar");
-const confirmBtn = document.getElementById("confirmBtn");
-const cancelBtn = document.getElementById("cancelBtn");
-const fileInput = document.getElementById("fileInput");
-const fileArea = document.getElementById("fileArea");
-const fileLabel = document.getElementById("fileLabel");
-const fileIcon = document.getElementById("fileIcon");
-const copyToast = document.getElementById("copyToast");
-const browserGrid = document.getElementById("browserGrid");
+const HOST_NAME = "com.chromium_bookmark_rescue.host";
 
-let bookmarksData = null;
+const BROWSER_META = {
+  comet:    { name: "Comet",    icon: "\u{1F320}" },
+  arc:      { name: "Arc",      icon: "\u{1F308}" },
+  brave:    { name: "Brave",    icon: "\u{1F981}" },
+  vivaldi:  { name: "Vivaldi",  icon: "\u{1F3B6}" },
+  opera:    { name: "Opera",    icon: "\u{1F3AC}" },
+  "opera-gx": { name: "Opera GX", icon: "\u{1F3AE}" },
+  edge:     { name: "Edge",     icon: "\u{1F310}" },
+  yandex:   { name: "Yandex",   icon: "\u{1F534}" },
+  chrome:   { name: "Chrome",   icon: "\u{1F536}" },
+  chromium: { name: "Chromium", icon: "\u{1F535}" },
+};
 
-// --- Status ---
+let selectedBookmarks = null;
+let selectedBrowserName = "";
+let nativeAvailable = false;
+
+// --- State management ---
+
+function showState(id) {
+  document.querySelectorAll(".state").forEach((el) => el.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
 
 function showStatus(msg, type) {
-  statusEl.textContent = msg;
-  statusEl.className = type;
-  statusEl.style.display = "block";
+  const el = document.getElementById("status");
+  el.textContent = msg;
+  el.className = type;
+  el.style.display = "block";
 }
 
 function hideStatus() {
-  statusEl.style.display = "none";
+  document.getElementById("status").style.display = "none";
 }
 
-// --- Browser path copy ---
+// --- Native Messaging ---
 
-browserGrid.addEventListener("click", async (e) => {
-  const btn = e.target.closest(".browser-btn");
-  if (!btn) return;
-
-  const path = btn.dataset.path;
-  try {
-    await navigator.clipboard.writeText(path);
-
-    // Reset all buttons
-    browserGrid.querySelectorAll(".browser-btn").forEach((b) => {
-      b.classList.remove("copied");
+function sendNativeMessage(msg) {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendNativeMessage(HOST_NAME, msg, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+      } else {
+        resolve(response);
+      }
     });
-    btn.classList.add("copied");
+  });
+}
 
-    copyToast.textContent = "Путь скопирован! Вставьте в адресную строку Проводника (Ctrl+V)";
-    setTimeout(() => {
-      copyToast.textContent = "";
-      btn.classList.remove("copied");
-    }, 5000);
+async function detectBrowsers() {
+  try {
+    const response = await sendNativeMessage({ action: "detect" });
+    nativeAvailable = true;
+    return response.browsers || [];
   } catch {
-    copyToast.textContent = "Не удалось скопировать";
+    nativeAvailable = false;
+    return null;
   }
-});
-
-// --- File handling ---
-
-function parseBookmarksFile(text) {
-  const data = JSON.parse(text);
-  if (!data.roots || !data.roots.bookmark_bar) {
-    throw new Error("Неверный формат файла. Убедитесь что это файл Bookmarks из Chromium-браузера.");
-  }
-  return data.roots.bookmark_bar.children || [];
 }
 
-function countBookmarks(items) {
-  let count = 0;
-  for (const item of items) {
-    if (item.type === "folder") {
-      count += countBookmarks(item.children || []);
-    } else {
-      count++;
-    }
-  }
-  return count;
+async function readBrowserBookmarks(browserId) {
+  const response = await sendNativeMessage({ action: "read", browser: browserId });
+  if (response.error) throw new Error(response.error);
+  return response;
 }
 
-function countFolders(items) {
-  let count = 0;
-  for (const item of items) {
-    if (item.type === "folder") {
-      count += 1 + countFolders(item.children || []);
-    }
+// --- UI rendering ---
+
+function renderBrowserList(browsers) {
+  const list = document.getElementById("browserList");
+  list.innerHTML = "";
+
+  if (!browsers || browsers.length === 0) {
+    list.innerHTML = '<div class="no-browsers">Браузеры с закладками не найдены</div>';
+    return;
   }
-  return count;
+
+  // Don't show Chrome as source (you're importing INTO Chrome)
+  const filtered = browsers.filter((b) => b.id !== "chrome");
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="no-browsers">Нет других браузеров с закладками</div>';
+    return;
+  }
+
+  for (const browser of filtered) {
+    const meta = BROWSER_META[browser.id] || { name: browser.id, icon: "\u{1F4E6}" };
+    const item = document.createElement("div");
+    item.className = "browser-item";
+    item.innerHTML = `
+      <span class="icon">${meta.icon}</span>
+      <div class="info">
+        <div class="name">${meta.name}</div>
+        <div class="meta">${browser.urls} закладок, ${browser.folders} папок</div>
+      </div>
+      <span class="arrow">\u203A</span>
+    `;
+    item.addEventListener("click", () => onBrowserClick(browser.id, meta.name));
+    list.appendChild(item);
+  }
 }
 
-function handleFile(file) {
+async function onBrowserClick(browserId, browserName) {
+  hideStatus();
+  showState("stateLoading");
+  document.querySelector("#stateLoading .loading").textContent = `Читаю закладки ${browserName}...`;
+
+  try {
+    const data = await readBrowserBookmarks(browserId);
+    selectedBookmarks = data.bookmarks;
+    selectedBrowserName = browserName;
+    showConfirm(browserName, data.urls, data.folders);
+  } catch (err) {
+    showState("stateBrowsers");
+    showStatus("Ошибка: " + err.message, "error");
+  }
+}
+
+function showConfirm(name, urls, folders) {
+  document.getElementById("confirmName").textContent = name;
+  document.getElementById("confirmStats").innerHTML =
+    `<span class="num">${urls}</span> закладок, <span class="num">${folders}</span> папок`;
+  showState("stateConfirm");
+}
+
+// --- File fallback ---
+
+function setupFileArea(areaId, inputId) {
+  const area = document.getElementById(areaId);
+  const input = document.getElementById(inputId);
+
+  area.addEventListener("click", () => input.click());
+  area.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    area.classList.add("dragover");
+  });
+  area.addEventListener("dragleave", () => area.classList.remove("dragover"));
+  area.addEventListener("drop", (e) => {
+    e.preventDefault();
+    area.classList.remove("dragover");
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0], area);
+  });
+  input.addEventListener("change", () => {
+    if (input.files.length) handleFile(input.files[0], area);
+  });
+}
+
+function handleFile(file, area) {
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
-      bookmarksData = parseBookmarksFile(e.target.result);
-      const urls = countBookmarks(bookmarksData);
-      const folders = countFolders(bookmarksData);
+      const data = JSON.parse(e.target.result);
+      if (!data.roots || !data.roots.bookmark_bar) {
+        throw new Error("Неверный формат файла");
+      }
+      selectedBookmarks = data.roots.bookmark_bar.children || [];
+      selectedBrowserName = file.name;
 
-      fileArea.classList.add("has-file");
-      fileIcon.textContent = "\u2705";
-      fileLabel.innerHTML = `<span class="filename">${file.name}</span>`;
+      const urls = countBookmarks(selectedBookmarks);
+      const folders = countFolders(selectedBookmarks);
 
-      statsEl.innerHTML = `
-        <span><span class="num">${urls}</span> закладок</span>
-        <span><span class="num">${folders}</span> папок</span>
-      `;
-      statsEl.style.display = "flex";
-      warningBox.style.display = "block";
-      replaceBtn.disabled = false;
-      hideStatus();
+      area.classList.add("has-file");
+      area.querySelector("input").style.display = "none";
+      area.textContent = `\u2705 ${file.name}`;
+
+      showConfirm(file.name, urls, folders);
     } catch (err) {
-      showStatus(err.message, "error");
-      replaceBtn.disabled = true;
+      showStatus("Ошибка: " + err.message, "error");
     }
   };
   reader.readAsText(file, "utf-8");
 }
 
-fileArea.addEventListener("click", () => fileInput.click());
-fileArea.addEventListener("dragover", (e) => {
-  e.preventDefault();
-  fileArea.classList.add("dragover");
-});
-fileArea.addEventListener("dragleave", () => {
-  fileArea.classList.remove("dragover");
-});
-fileArea.addEventListener("drop", (e) => {
-  e.preventDefault();
-  fileArea.classList.remove("dragover");
-  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-});
-fileInput.addEventListener("change", () => {
-  if (fileInput.files.length) handleFile(fileInput.files[0]);
-});
-
-// --- Replace with confirmation ---
-
-replaceBtn.addEventListener("click", () => {
-  if (!bookmarksData) return;
-  replaceBtn.style.display = "none";
-  confirmBar.classList.add("visible");
-});
-
-cancelBtn.addEventListener("click", () => {
-  confirmBar.classList.remove("visible");
-  replaceBtn.style.display = "";
-});
-
-confirmBtn.addEventListener("click", async () => {
-  if (!bookmarksData) return;
-  confirmBtn.disabled = true;
-  cancelBtn.disabled = true;
-
-  try {
-    const tree = await chrome.bookmarks.getTree();
-    const roots = tree[0].children;
-
-    showStatus("Удаляю старые закладки...", "info");
-    await removeAllChildren(roots[0].id);
-    if (roots[1]) await removeAllChildren(roots[1].id);
-
-    showStatus("Создаю новые закладки...", "info");
-    const count = await createBookmarks(bookmarksData, roots[0].id);
-
-    showStatus(`Готово! Создано ${count} элементов. Закладки синхронизируются автоматически.`, "success");
-  } catch (err) {
-    showStatus("Ошибка: " + err.message, "error");
-  }
-
-  confirmBar.classList.remove("visible");
-  replaceBtn.style.display = "";
-  replaceBtn.disabled = false;
-  confirmBtn.disabled = false;
-  cancelBtn.disabled = false;
-});
+function countBookmarks(items) {
+  let c = 0;
+  for (const i of items) c += i.type === "folder" ? countBookmarks(i.children || []) : 1;
+  return c;
+}
+function countFolders(items) {
+  let c = 0;
+  for (const i of items) if (i.type === "folder") c += 1 + countFolders(i.children || []);
+  return c;
+}
 
 // --- Bookmark operations ---
 
@@ -187,19 +201,60 @@ async function createBookmarks(items, parentId) {
   let count = 0;
   for (const item of items) {
     if (item.type === "folder") {
-      const folder = await chrome.bookmarks.create({
-        parentId,
-        title: item.name || "",
-      });
+      const folder = await chrome.bookmarks.create({ parentId, title: item.name || "" });
       count += 1 + await createBookmarks(item.children || [], folder.id);
     } else if (item.type === "url" && item.url) {
-      await chrome.bookmarks.create({
-        parentId,
-        title: item.name || "",
-        url: item.url,
-      });
+      await chrome.bookmarks.create({ parentId, title: item.name || "", url: item.url });
       count++;
     }
   }
   return count;
 }
+
+async function doReplace() {
+  const confirmBtn = document.getElementById("confirmBtn");
+  const cancelBtn = document.getElementById("cancelBtn");
+  confirmBtn.disabled = true;
+  cancelBtn.disabled = true;
+
+  try {
+    const tree = await chrome.bookmarks.getTree();
+    const roots = tree[0].children;
+
+    showStatus("Удаляю старые закладки...", "info");
+    await removeAllChildren(roots[0].id);
+    if (roots[1]) await removeAllChildren(roots[1].id);
+
+    showStatus("Создаю новые закладки...", "info");
+    const count = await createBookmarks(selectedBookmarks, roots[0].id);
+
+    showStatus(`Готово! Создано ${count} элементов. Закладки синхронизируются автоматически.`, "success");
+  } catch (err) {
+    showStatus("Ошибка: " + err.message, "error");
+  }
+
+  confirmBtn.disabled = false;
+  cancelBtn.disabled = false;
+}
+
+// --- Init ---
+
+document.getElementById("cancelBtn").addEventListener("click", () => {
+  hideStatus();
+  showState(nativeAvailable ? "stateBrowsers" : "stateSetup");
+});
+
+document.getElementById("confirmBtn").addEventListener("click", doReplace);
+
+setupFileArea("fileAreaFallback", "fileInputFallback");
+setupFileArea("fileAreaMain", "fileInputMain");
+
+(async () => {
+  const browsers = await detectBrowsers();
+  if (browsers === null) {
+    showState("stateSetup");
+  } else {
+    renderBrowserList(browsers);
+    showState("stateBrowsers");
+  }
+})();
