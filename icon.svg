@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2196F3"/>
+      <stop offset="100%" stop-color="#26A69A"/>
+    </linearGradient>
+    <linearGradient id="bookmark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e0e0e0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded background -->
+  <rect x="4" y="4" width="120" height="120" rx="24" ry="24" fill="url(#bg)"/>
+
+  <!-- Bookmark shape (left side) -->
+  <path d="M 34 28 L 62 28 L 62 88 L 48 74 L 34 88 Z"
+        fill="url(#bookmark)" stroke="#fff" stroke-width="1.5" opacity="0.95"/>
+
+  <!-- Curved rescue arrow (from bookmark to the right) -->
+  <path d="M 58 58 Q 78 38 92 54"
+        fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+  <!-- Arrowhead -->
+  <polygon points="92,44 96,55 86,54" fill="#ffffff"/>
+
+  <!-- Small lifebuoy ring (bottom-right) -->
+  <circle cx="88" cy="82" r="16" fill="none" stroke="#ffffff" stroke-width="3.5" opacity="0.9"/>
+  <circle cx="88" cy="82" r="8" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.7"/>
+  <!-- Lifebuoy cross lines -->
+  <line x1="88" y1="66" x2="88" y2="74" stroke="#FF7043" stroke-width="3" stroke-linecap="round"/>
+  <line x1="88" y1="90" x2="88" y2="98" stroke="#FF7043" stroke-width="3" stroke-linecap="round"/>
+  <line x1="72" y1="82" x2="80" y2="82" stroke="#FF7043" stroke-width="3" stroke-linecap="round"/>
+  <line x1="96" y1="82" x2="104" y2="82" stroke="#FF7043" stroke-width="3" stroke-linecap="round"/>
+</svg>

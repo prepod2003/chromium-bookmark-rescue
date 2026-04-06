@@ -1,0 +1,8 @@
+{
+  "appName": {
+    "message": "Chromium Bookmark Rescue"
+  },
+  "appDescription": {
+    "message": "Перенос закладок из Chromium-браузеров, в которых нет функции экспорта"
+  }
+}

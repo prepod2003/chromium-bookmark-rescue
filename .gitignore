@@ -1,0 +1,5 @@
+comet_data.js
+*.backup*
+*.bak
+__pycache__/
+*.pyc

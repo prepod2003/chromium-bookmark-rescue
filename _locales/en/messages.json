@@ -1,0 +1,8 @@
+{
+  "appName": {
+    "message": "Chromium Bookmark Rescue"
+  },
+  "appDescription": {
+    "message": "Transfer bookmarks from Chromium-based browsers that lack a built-in export feature"
+  }
+}
