@@ -1,5 +1,7 @@
 # Chromium Bookmark Rescue
 
+[Русская версия](README.ru.md)
+
 A Chrome extension that **fully replaces** your Chrome bookmarks with bookmarks from any Chromium-based browser — even those that don't offer a built-in export.
 
 Works with **Comet** (Perplexity), **Arc**, **Brave**, **Vivaldi**, **Opera**, **Edge**, **Yandex Browser**, and any other Chromium-based browser.
