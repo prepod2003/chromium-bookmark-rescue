@@ -43,16 +43,27 @@
 
     /* Path hint toast */
     .path-hint {
-      display: none; font-size: 11px; color: #1e40af; background: #eff6ff;
-      border: 1px solid #bfdbfe; border-radius: 6px;
-      padding: 8px 10px; margin-bottom: 10px; line-height: 1.5;
+      display: none; font-size: 12px; color: #1e40af; background: #eff6ff;
+      border: 1px solid #93c5fd; border-radius: 8px;
+      padding: 10px 12px; margin-bottom: 10px; line-height: 1.6;
     }
-    .path-hint.visible { display: block; }
+    .path-hint.visible { display: block; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .path-hint .copied-badge {
+      display: inline-block; background: #22c55e; color: white;
+      font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px;
+      margin-right: 4px; vertical-align: middle;
+    }
     .path-hint .path {
-      background: #dbeafe; padding: 2px 6px; border-radius: 3px;
-      font-family: monospace; font-size: 11px; user-select: all;
-      display: inline-block; margin-top: 2px; word-break: break-all;
+      background: #dbeafe; padding: 3px 8px; border-radius: 4px;
+      font-family: 'Consolas', monospace; font-size: 11px; user-select: all;
+      display: block; margin-top: 6px; word-break: break-all;
+      border: 1px solid #bfdbfe;
     }
+    .path-hint .instruction {
+      font-size: 11px; color: #6b7280; margin-top: 6px;
+    }
+    .path-hint .instruction strong { color: #1e40af; }
 
     /* File area */
     .divider {
@@ -153,15 +164,18 @@
   <div class="browser-grid" id="browserGrid"></div>
 
   <div class="path-hint" id="pathHint">
-    <strong>Путь к файлу Bookmarks:</strong><br>
+    <span class="copied-badge">СКОПИРОВАНО</span> Путь к закладкам
     <span class="path" id="pathText"></span>
+    <div class="instruction">
+      В открывшемся окне вставьте путь в <strong>адресную строку</strong> (Ctrl+V) и выберите файл <strong>Bookmarks</strong>
+    </div>
   </div>
 
   <div class="divider">или перетащите файл Bookmarks</div>
 
   <div class="file-area" id="fileArea">
     Нажмите или перетащите файл сюда
-    <input type="file" id="fileInput" accept=".json,*">
+    <input type="file" id="fileInput">
   </div>
 
   <div class="stats" id="stats"></div>

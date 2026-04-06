@@ -125,6 +125,10 @@ Yes. The complete hierarchy of folders and bookmarks is recreated exactly as it 
 **Which browsers are supported as a source?**
 Any Chromium-based browser: Comet (Perplexity), Arc, Brave, Vivaldi, Opera, Opera GX, Microsoft Edge, Yandex Browser, Chromium, and others. If the browser stores bookmarks in the standard Chromium JSON format, it will work.
 
+## Author
+
+**Sergey V. Radzivillovich** — [prepod2003@yandex.ru](mailto:prepod2003@yandex.ru)
+
 ## License
 
 [MIT](LICENSE)
