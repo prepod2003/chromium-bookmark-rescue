@@ -6,14 +6,14 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      width: 420px; padding: 24px;
+      width: 420px; padding: 20px;
       font-family: 'Segoe UI', Arial, sans-serif; color: #333;
       background: #fafbfc;
     }
 
     .header {
       display: flex; align-items: center; gap: 10px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     .header img { width: 28px; height: 28px; }
     .header h2 { font-size: 17px; font-weight: 700; }
@@ -23,65 +23,98 @@
       padding-left: 38px;
     }
 
-    .description {
-      font-size: 13px; color: #555; margin-bottom: 16px; line-height: 1.5;
+    /* Steps */
+    .step {
+      margin-bottom: 14px;
+    }
+    .step-title {
+      font-size: 13px; font-weight: 700; color: #1e40af;
+      margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+    }
+    .step-num {
+      background: #1e40af; color: white; width: 20px; height: 20px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 11px; flex-shrink: 0;
+    }
+    .step-body { padding-left: 26px; }
+
+    .step-hint {
+      font-size: 11px; color: #999; margin-top: 4px; line-height: 1.4;
     }
 
-    .warning {
-      font-size: 12px; color: #b45309; background: #fef3c7;
-      border: 1px solid #fcd34d; border-radius: 6px;
-      padding: 8px 10px; margin-bottom: 16px; line-height: 1.4;
+    /* Browser buttons */
+    .browser-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4px; margin-bottom: 6px;
+    }
+    .browser-btn {
+      padding: 7px 10px; font-size: 12px; cursor: pointer;
+      border: 1px solid #e5e7eb; border-radius: 6px;
+      background: white; color: #333; text-align: left;
+      transition: all 0.15s; display: flex; align-items: center; gap: 6px;
+    }
+    .browser-btn:hover { border-color: #4285f4; background: #f0f4ff; }
+    .browser-btn.copied {
+      border-color: #22c55e; background: #f0fdf4; color: #166534;
+    }
+    .browser-btn .icon { font-size: 14px; }
+
+    .copy-toast {
+      font-size: 11px; color: #22c55e; text-align: center;
+      margin-bottom: 4px; min-height: 16px;
     }
 
+    /* File area */
     .file-area {
-      border: 2px dashed #d1d5db; border-radius: 10px; padding: 24px;
-      text-align: center; cursor: pointer; margin-bottom: 10px;
+      border: 2px dashed #d1d5db; border-radius: 10px; padding: 18px;
+      text-align: center; cursor: pointer; margin-bottom: 8px;
       transition: all 0.2s;
     }
     .file-area:hover { border-color: #4285f4; background: #f0f4ff; }
     .file-area.has-file { border-color: #22c55e; background: #f0fdf4; border-style: solid; }
     .file-area.dragover { border-color: #4285f4; background: #e8f0fe; }
     .file-area input { display: none; }
-    .file-area .icon { font-size: 28px; margin-bottom: 6px; }
+    .file-area .icon { font-size: 24px; margin-bottom: 4px; }
     .file-area .label { font-size: 13px; color: #888; display: block; }
     .file-area .filename { font-size: 14px; color: #22c55e; font-weight: 600; }
 
-    .file-hint {
-      font-size: 11px; color: #aaa; margin-bottom: 16px; line-height: 1.5;
-    }
-    .file-hint code {
-      background: #f1f5f9; padding: 1px 4px; border-radius: 3px;
-      font-size: 10px; color: #64748b;
-    }
-
     .stats {
-      font-size: 13px; color: #6b7280; margin-bottom: 16px;
+      font-size: 13px; color: #6b7280; margin-bottom: 12px;
       display: flex; gap: 16px; justify-content: center;
     }
     .stats span { display: flex; align-items: center; gap: 4px; }
     .stats .num { font-weight: 700; color: #333; }
 
-    button {
+    /* Warning */
+    .warning {
+      font-size: 11px; color: #b45309; background: #fef3c7;
+      border: 1px solid #fcd34d; border-radius: 6px;
+      padding: 8px 10px; margin-bottom: 12px; line-height: 1.4;
+    }
+
+    /* Buttons */
+    button.primary {
       width: 100%; padding: 12px; font-size: 14px; cursor: pointer;
       border: none; border-radius: 8px; color: white; font-weight: 600;
       transition: all 0.2s;
     }
-    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    button.primary:disabled { opacity: 0.4; cursor: not-allowed; }
     #replaceBtn { background: #ef4444; }
     #replaceBtn:hover:not(:disabled) { background: #dc2626; }
 
     .confirm-bar {
-      display: none; margin-top: 10px; gap: 8px;
+      display: none; margin-top: 8px; gap: 8px;
     }
     .confirm-bar.visible { display: flex; }
-    .confirm-bar button { flex: 1; padding: 10px; font-size: 13px; }
+    .confirm-bar button { flex: 1; padding: 10px; font-size: 13px; cursor: pointer;
+      border: none; border-radius: 8px; color: white; font-weight: 600; }
     #confirmBtn { background: #ef4444; }
     #confirmBtn:hover { background: #dc2626; }
     #cancelBtn { background: #6b7280; }
     #cancelBtn:hover { background: #4b5563; }
 
     #status {
-      margin-top: 12px; padding: 10px 12px; border-radius: 8px;
+      margin-top: 10px; padding: 10px 12px; border-radius: 8px;
       display: none; font-size: 13px; line-height: 1.5;
     }
     .success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
@@ -89,11 +122,13 @@
     .info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
 
     .footer {
-      margin-top: 16px; text-align: center;
+      margin-top: 14px; text-align: center;
       font-size: 11px; color: #ccc;
     }
     .footer a { color: #93c5fd; text-decoration: none; }
     .footer a:hover { text-decoration: underline; }
+
+    .divider { height: 1px; background: #e5e7eb; margin: 14px 0; }
   </style>
 </head>
 <body>
@@ -120,31 +155,70 @@
   </div>
   <div class="subtitle">Перенос закладок из любого Chromium-браузера</div>
 
-  <p class="description">
-    Загрузите файл <strong>Bookmarks</strong> из другого браузера
-    (Comet, Arc, Brave, Vivaldi, Opera, Edge, Яндекс и др.)
-    — все закладки Chrome будут полностью заменены.
-  </p>
-
-  <div class="warning">
-    Все текущие закладки Chrome будут удалены и заменены новыми из загруженного файла.
-    Это действие нельзя отменить.
+  <!-- Step 1 -->
+  <div class="step">
+    <div class="step-title">
+      <span class="step-num">1</span>
+      Скопируйте путь к закладкам браузера
+    </div>
+    <div class="step-body">
+      <div class="browser-grid" id="browserGrid">
+        <button class="browser-btn" data-path="%LOCALAPPDATA%\Perplexity\Comet\User Data\Default">
+          <span class="icon">&#127776;</span> Comet
+        </button>
+        <button class="browser-btn" data-path="%LOCALAPPDATA%\Arc\User Data\Default">
+          <span class="icon">&#127752;</span> Arc
+        </button>
+        <button class="browser-btn" data-path="%LOCALAPPDATA%\BraveSoftware\Brave-Browser\User Data\Default">
+          <span class="icon">&#129409;</span> Brave
+        </button>
+        <button class="browser-btn" data-path="%LOCALAPPDATA%\Vivaldi\User Data\Default">
+          <span class="icon">&#127926;</span> Vivaldi
+        </button>
+        <button class="browser-btn" data-path="%APPDATA%\Opera Software\Opera Stable">
+          <span class="icon">&#127916;</span> Opera
+        </button>
+        <button class="browser-btn" data-path="%LOCALAPPDATA%\Microsoft\Edge\User Data\Default">
+          <span class="icon">&#127760;</span> Edge
+        </button>
+        <button class="browser-btn" data-path="%LOCALAPPDATA%\Yandex\YandexBrowser\User Data\Default">
+          <span class="icon">&#128308;</span> Yandex
+        </button>
+        <button class="browser-btn" data-path="%LOCALAPPDATA%\Google\Chrome\User Data\Default">
+          <span class="icon">&#128310;</span> Chrome
+        </button>
+      </div>
+      <div class="copy-toast" id="copyToast"></div>
+      <div class="step-hint">
+        Нажмите на браузер &#8594; откройте Проводник (Win+E) &#8594; вставьте путь в адресную строку (Ctrl+V) &#8594; найдите файл <strong>Bookmarks</strong> (без расширения)
+      </div>
+    </div>
   </div>
 
-  <div class="file-area" id="fileArea">
-    <div class="icon" id="fileIcon">&#128193;</div>
-    <span class="label" id="fileLabel">Нажмите или перетащите файл Bookmarks</span>
-    <input type="file" id="fileInput" accept=".json,*">
-  </div>
-  <div class="file-hint">
-    Файл находится в
-    <code>%LocalAppData%\&lt;Browser&gt;\User Data\Default\Bookmarks</code>
-    <br>Используйте <code>python extract_bookmarks.py</code> для автоматического поиска
+  <div class="divider"></div>
+
+  <!-- Step 2 -->
+  <div class="step">
+    <div class="step-title">
+      <span class="step-num">2</span>
+      Загрузите файл Bookmarks
+    </div>
+    <div class="step-body">
+      <div class="file-area" id="fileArea">
+        <div class="icon" id="fileIcon">&#128193;</div>
+        <span class="label" id="fileLabel">Нажмите или перетащите файл сюда</span>
+        <input type="file" id="fileInput" accept=".json,*">
+      </div>
+    </div>
   </div>
 
   <div class="stats" id="stats" style="display:none"></div>
 
-  <button id="replaceBtn" disabled>Заменить все закладки Chrome</button>
+  <div class="warning" id="warningBox" style="display:none">
+    Все текущие закладки Chrome будут удалены и заменены новыми. Это действие нельзя отменить.
+  </div>
+
+  <button class="primary" id="replaceBtn" disabled>Заменить все закладки Chrome</button>
 
   <div class="confirm-bar" id="confirmBar">
     <button id="cancelBtn">Отмена</button>

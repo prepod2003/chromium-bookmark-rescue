@@ -1,5 +1,6 @@
 const statusEl = document.getElementById("status");
 const statsEl = document.getElementById("stats");
+const warningBox = document.getElementById("warningBox");
 const replaceBtn = document.getElementById("replaceBtn");
 const confirmBar = document.getElementById("confirmBar");
 const confirmBtn = document.getElementById("confirmBtn");
@@ -8,8 +9,12 @@ const fileInput = document.getElementById("fileInput");
 const fileArea = document.getElementById("fileArea");
 const fileLabel = document.getElementById("fileLabel");
 const fileIcon = document.getElementById("fileIcon");
+const copyToast = document.getElementById("copyToast");
+const browserGrid = document.getElementById("browserGrid");
 
 let bookmarksData = null;
+
+// --- Status ---
 
 function showStatus(msg, type) {
   statusEl.textContent = msg;
@@ -21,10 +26,38 @@ function hideStatus() {
   statusEl.style.display = "none";
 }
 
+// --- Browser path copy ---
+
+browserGrid.addEventListener("click", async (e) => {
+  const btn = e.target.closest(".browser-btn");
+  if (!btn) return;
+
+  const path = btn.dataset.path;
+  try {
+    await navigator.clipboard.writeText(path);
+
+    // Reset all buttons
+    browserGrid.querySelectorAll(".browser-btn").forEach((b) => {
+      b.classList.remove("copied");
+    });
+    btn.classList.add("copied");
+
+    copyToast.textContent = "Путь скопирован! Вставьте в адресную строку Проводника (Ctrl+V)";
+    setTimeout(() => {
+      copyToast.textContent = "";
+      btn.classList.remove("copied");
+    }, 5000);
+  } catch {
+    copyToast.textContent = "Не удалось скопировать";
+  }
+});
+
+// --- File handling ---
+
 function parseBookmarksFile(text) {
   const data = JSON.parse(text);
   if (!data.roots || !data.roots.bookmark_bar) {
-    throw new Error("Invalid format: missing roots.bookmark_bar");
+    throw new Error("Неверный формат файла. Убедитесь что это файл Bookmarks из Chromium-браузера.");
   }
   return data.roots.bookmark_bar.children || [];
 }
@@ -64,22 +97,21 @@ function handleFile(file) {
       fileLabel.innerHTML = `<span class="filename">${file.name}</span>`;
 
       statsEl.innerHTML = `
-        <span><span class="num">${urls}</span> bookmarks</span>
-        <span><span class="num">${folders}</span> folders</span>
+        <span><span class="num">${urls}</span> закладок</span>
+        <span><span class="num">${folders}</span> папок</span>
       `;
       statsEl.style.display = "flex";
-
+      warningBox.style.display = "block";
       replaceBtn.disabled = false;
       hideStatus();
     } catch (err) {
-      showStatus("Error: " + err.message, "error");
+      showStatus(err.message, "error");
       replaceBtn.disabled = true;
     }
   };
   reader.readAsText(file, "utf-8");
 }
 
-// File area events
 fileArea.addEventListener("click", () => fileInput.click());
 fileArea.addEventListener("dragover", (e) => {
   e.preventDefault();
@@ -97,7 +129,8 @@ fileInput.addEventListener("change", () => {
   if (fileInput.files.length) handleFile(fileInput.files[0]);
 });
 
-// Replace button — show confirmation
+// --- Replace with confirmation ---
+
 replaceBtn.addEventListener("click", () => {
   if (!bookmarksData) return;
   replaceBtn.style.display = "none";
@@ -109,7 +142,6 @@ cancelBtn.addEventListener("click", () => {
   replaceBtn.style.display = "";
 });
 
-// Actual replacement
 confirmBtn.addEventListener("click", async () => {
   if (!bookmarksData) return;
   confirmBtn.disabled = true;
@@ -119,16 +151,16 @@ confirmBtn.addEventListener("click", async () => {
     const tree = await chrome.bookmarks.getTree();
     const roots = tree[0].children;
 
-    showStatus("Removing old bookmarks...", "info");
+    showStatus("Удаляю старые закладки...", "info");
     await removeAllChildren(roots[0].id);
     if (roots[1]) await removeAllChildren(roots[1].id);
 
-    showStatus("Creating new bookmarks...", "info");
+    showStatus("Создаю новые закладки...", "info");
     const count = await createBookmarks(bookmarksData, roots[0].id);
 
-    showStatus(`Done! ${count} items created and synced.`, "success");
+    showStatus(`Готово! Создано ${count} элементов. Закладки синхронизируются автоматически.`, "success");
   } catch (err) {
-    showStatus("Error: " + err.message, "error");
+    showStatus("Ошибка: " + err.message, "error");
   }
 
   confirmBar.classList.remove("visible");
@@ -137,6 +169,8 @@ confirmBtn.addEventListener("click", async () => {
   confirmBtn.disabled = false;
   cancelBtn.disabled = false;
 });
+
+// --- Bookmark operations ---
 
 async function removeAllChildren(parentId) {
   const children = await chrome.bookmarks.getChildren(parentId);
