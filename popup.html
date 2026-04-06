@@ -18,111 +18,105 @@
     .header h2 { font-size: 16px; font-weight: 700; }
 
     .subtitle {
-      font-size: 12px; color: #888; margin-bottom: 16px;
+      font-size: 12px; color: #888; margin-bottom: 14px;
       padding-left: 38px;
     }
 
-    /* States */
-    .state { display: none; }
-    .state.active { display: block; }
-
-    /* Loading */
-    .loading { text-align: center; padding: 20px; color: #888; font-size: 13px; }
-    .spinner {
-      width: 24px; height: 24px; border: 3px solid #e5e7eb;
-      border-top-color: #4285f4; border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 10px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Setup needed */
-    .setup-box {
-      background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px;
-      padding: 14px; font-size: 13px; color: #92400e; line-height: 1.5;
-    }
-    .setup-box code {
-      background: #fff; padding: 2px 6px; border-radius: 4px;
-      font-size: 12px; display: inline-block; margin: 4px 0;
-      border: 1px solid #e5e7eb; user-select: all;
+    .description {
+      font-size: 13px; color: #555; margin-bottom: 14px; line-height: 1.5;
     }
 
-    /* Browser list */
-    .browser-list { display: flex; flex-direction: column; gap: 6px; }
-    .browser-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px;
-      background: white; cursor: pointer; transition: all 0.15s;
+    /* Browser grid */
+    .browser-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6px; margin-bottom: 10px;
     }
-    .browser-item:hover { border-color: #4285f4; background: #f0f4ff; }
-    .browser-item .icon { font-size: 22px; flex-shrink: 0; }
-    .browser-item .info { flex: 1; }
-    .browser-item .name { font-size: 14px; font-weight: 600; }
-    .browser-item .meta { font-size: 11px; color: #888; }
-    .browser-item .arrow { color: #ccc; font-size: 18px; }
+    .browser-btn {
+      padding: 10px 12px; font-size: 13px; cursor: pointer;
+      border: 1px solid #e5e7eb; border-radius: 8px;
+      background: white; color: #333; text-align: left;
+      transition: all 0.15s; display: flex; align-items: center; gap: 8px;
+    }
+    .browser-btn:hover { border-color: #4285f4; background: #f0f4ff; }
+    .browser-btn .icon { font-size: 18px; }
+    .browser-btn .name { font-weight: 600; }
 
-    .no-browsers {
-      text-align: center; padding: 20px; color: #999; font-size: 13px;
+    /* Path hint toast */
+    .path-hint {
+      display: none; font-size: 11px; color: #1e40af; background: #eff6ff;
+      border: 1px solid #bfdbfe; border-radius: 6px;
+      padding: 8px 10px; margin-bottom: 10px; line-height: 1.5;
     }
-
-    /* Confirm */
-    .confirm-box {
-      text-align: center; padding: 10px 0;
-    }
-    .confirm-box .browser-name {
-      font-size: 18px; font-weight: 700; margin-bottom: 4px;
-    }
-    .confirm-box .confirm-stats {
-      font-size: 13px; color: #666; margin-bottom: 14px;
-    }
-    .confirm-box .confirm-stats .num { font-weight: 700; color: #333; }
-
-    .warning {
-      font-size: 12px; color: #b45309; background: #fef3c7;
-      border: 1px solid #fcd34d; border-radius: 6px;
-      padding: 8px 10px; margin-bottom: 14px; line-height: 1.4;
-      text-align: left;
+    .path-hint.visible { display: block; }
+    .path-hint .path {
+      background: #dbeafe; padding: 2px 6px; border-radius: 3px;
+      font-family: monospace; font-size: 11px; user-select: all;
+      display: inline-block; margin-top: 2px; word-break: break-all;
     }
 
-    .btn-row { display: flex; gap: 8px; }
-    .btn-row button {
-      flex: 1; padding: 11px; font-size: 14px; cursor: pointer;
-      border: none; border-radius: 8px; color: white; font-weight: 600;
-      transition: all 0.15s;
-    }
-    .btn-cancel { background: #6b7280; }
-    .btn-cancel:hover { background: #4b5563; }
-    .btn-danger { background: #ef4444; }
-    .btn-danger:hover { background: #dc2626; }
-    .btn-danger:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    /* Result */
-    #status {
-      margin-top: 12px; padding: 10px 12px; border-radius: 8px;
-      display: none; font-size: 13px; line-height: 1.5;
-    }
-    .success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-    .error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-    .info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
-
-    /* Fallback file area */
+    /* File area */
     .divider {
       display: flex; align-items: center; gap: 10px;
-      margin: 14px 0; color: #ccc; font-size: 11px;
+      margin: 10px 0; color: #ccc; font-size: 11px;
     }
     .divider::before, .divider::after {
       content: ''; flex: 1; height: 1px; background: #e5e7eb;
     }
 
     .file-area {
-      border: 2px dashed #d1d5db; border-radius: 8px; padding: 14px;
+      border: 2px dashed #d1d5db; border-radius: 8px; padding: 16px;
       text-align: center; cursor: pointer; transition: all 0.2s;
       font-size: 12px; color: #999;
     }
     .file-area:hover { border-color: #4285f4; background: #f0f4ff; }
-    .file-area.has-file { border-color: #22c55e; background: #f0fdf4; border-style: solid; color: #22c55e; font-weight: 600; }
+    .file-area.has-file { border-color: #22c55e; background: #f0fdf4; border-style: solid; }
     .file-area.dragover { border-color: #4285f4; background: #e8f0fe; }
     .file-area input { display: none; }
+
+    /* Stats */
+    .stats {
+      font-size: 13px; color: #6b7280; margin: 10px 0;
+      display: none; gap: 16px; justify-content: center;
+    }
+    .stats span { display: flex; align-items: center; gap: 4px; }
+    .stats .num { font-weight: 700; color: #333; }
+
+    /* Warning */
+    .warning {
+      font-size: 12px; color: #b45309; background: #fef3c7;
+      border: 1px solid #fcd34d; border-radius: 6px;
+      padding: 8px 10px; margin-bottom: 12px; line-height: 1.4;
+      display: none;
+    }
+
+    /* Buttons */
+    button.primary {
+      width: 100%; padding: 12px; font-size: 14px; cursor: pointer;
+      border: none; border-radius: 8px; color: white; font-weight: 600;
+      transition: all 0.2s; display: none;
+    }
+    button.primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    #replaceBtn { background: #ef4444; }
+    #replaceBtn:hover:not(:disabled) { background: #dc2626; }
+
+    .confirm-bar { display: none; gap: 8px; }
+    .confirm-bar.visible { display: flex; }
+    .confirm-bar button {
+      flex: 1; padding: 10px; font-size: 13px; cursor: pointer;
+      border: none; border-radius: 8px; color: white; font-weight: 600;
+    }
+    #cancelBtn { background: #6b7280; }
+    #cancelBtn:hover { background: #4b5563; }
+    #confirmBtn { background: #ef4444; }
+    #confirmBtn:hover { background: #dc2626; }
+
+    #status {
+      margin-top: 10px; padding: 10px 12px; border-radius: 8px;
+      display: none; font-size: 13px; line-height: 1.5;
+    }
+    .success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
 
     .footer {
       margin-top: 14px; text-align: center; font-size: 11px; color: #ccc;
@@ -154,58 +148,31 @@
   </div>
   <div class="subtitle">Перенос закладок из любого Chromium-браузера</div>
 
-  <!-- State: Loading -->
-  <div class="state active" id="stateLoading">
-    <div class="loading">
-      <div class="spinner"></div>
-      Поиск браузеров...
-    </div>
+  <p class="description">Выберите браузер, из которого нужно перенести закладки:</p>
+
+  <div class="browser-grid" id="browserGrid"></div>
+
+  <div class="path-hint" id="pathHint">
+    <strong>Путь к файлу Bookmarks:</strong><br>
+    <span class="path" id="pathText"></span>
   </div>
 
-  <!-- State: Setup needed -->
-  <div class="state" id="stateSetup">
-    <div class="setup-box">
-      Для автоматического поиска закладок нужно выполнить одноразовую настройку.
-      Откройте терминал в папке расширения и запустите:
-      <br>
-      <code>python setup.py</code>
-      <br>
-      После этого перезагрузите расширение.
-    </div>
+  <div class="divider">или перетащите файл Bookmarks</div>
 
-    <div class="divider">или загрузите файл вручную</div>
-
-    <div class="file-area" id="fileAreaFallback">
-      Нажмите или перетащите файл Bookmarks
-      <input type="file" id="fileInputFallback" accept=".json,*">
-    </div>
+  <div class="file-area" id="fileArea">
+    Нажмите или перетащите файл сюда
+    <input type="file" id="fileInput" accept=".json,*">
   </div>
 
-  <!-- State: Browser list -->
-  <div class="state" id="stateBrowsers">
-    <div class="browser-list" id="browserList"></div>
-
-    <div class="divider">или загрузите файл вручную</div>
-
-    <div class="file-area" id="fileAreaMain">
-      Нажмите или перетащите файл Bookmarks
-      <input type="file" id="fileInputMain" accept=".json,*">
-    </div>
+  <div class="stats" id="stats"></div>
+  <div class="warning" id="warningBox">
+    Все текущие закладки Chrome будут удалены и заменены новыми. Это действие нельзя отменить.
   </div>
 
-  <!-- State: Confirm -->
-  <div class="state" id="stateConfirm">
-    <div class="confirm-box">
-      <div class="browser-name" id="confirmName"></div>
-      <div class="confirm-stats" id="confirmStats"></div>
-    </div>
-    <div class="warning">
-      Все текущие закладки Chrome будут удалены и заменены новыми. Это действие нельзя отменить.
-    </div>
-    <div class="btn-row">
-      <button class="btn-cancel" id="cancelBtn">Назад</button>
-      <button class="btn-danger" id="confirmBtn">Заменить</button>
-    </div>
+  <button class="primary" id="replaceBtn">Заменить все закладки Chrome</button>
+  <div class="confirm-bar" id="confirmBar">
+    <button id="cancelBtn">Отмена</button>
+    <button id="confirmBtn">Да, заменить</button>
   </div>
 
   <div id="status"></div>
